@@ -66,7 +66,7 @@ export function Footer() {
                 lineHeight: 1.8,
               }}
             >
-              Premium sushi. Rīga.
+              Premium sushi Rīgā.
             </p>
           </div>
 

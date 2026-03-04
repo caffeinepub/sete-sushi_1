@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Footer } from "../components/layout/Footer";
 import { Header } from "../components/layout/Header";
 import { useCart } from "../context/CartContext";
-import { useActiveOffers } from "../hooks/useQueries";
+import { useActiveOffers, useAddonOffers } from "../hooks/useQueries";
 import type { Offer } from "../lib/types";
 
 interface OffersProps {
@@ -86,6 +86,17 @@ function OfferCard({
         <div className="flex items-start justify-between mb-3">
           <div>
             <p className="gold-label mb-1">{offer.pieces}</p>
+            {offer.persons && (
+              <p
+                className="text-xs mb-1"
+                style={{
+                  color: "rgba(243,240,230,0.4)",
+                  letterSpacing: "0.03em",
+                }}
+              >
+                {offer.persons}
+              </p>
+            )}
             <h3
               className="font-serif"
               style={{
@@ -177,8 +188,72 @@ function OfferCard({
   );
 }
 
+function AddonCard({
+  addon,
+  index,
+}: {
+  addon: Offer;
+  index: number;
+}) {
+  const { addToCart } = useCart();
+
+  const handleAdd = () => {
+    addToCart(addon, 1);
+    toast.success("Pievienots grozam", {
+      description: `${addon.name} — ${addon.price}€`,
+    });
+  };
+
+  return (
+    <motion.div
+      className="premium-card flex-shrink-0 flex flex-col"
+      style={{ minWidth: "160px", maxWidth: "180px" }}
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -3 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.07, duration: 0.45 }}
+      data-ocid={`addons.item.${index + 1}`}
+    >
+      <div className="p-4 flex flex-col flex-1 gap-2">
+        <p className="gold-label" style={{ fontSize: "9px" }}>
+          {addon.pieces}
+        </p>
+        <h4
+          className="font-serif leading-tight"
+          style={{
+            color: "#F3F0E6",
+            fontSize: "0.85rem",
+            letterSpacing: "0.01em",
+          }}
+        >
+          {addon.name}
+        </h4>
+        <div className="flex items-center justify-between mt-auto pt-2">
+          <span
+            className="font-serif"
+            style={{ color: "#C7A35A", fontSize: "1.1rem" }}
+          >
+            {addon.price}€
+          </span>
+          <button
+            type="button"
+            className="btn-gold px-3 py-1.5 text-xs flex items-center gap-1"
+            onClick={handleAdd}
+            aria-label={`Pievienot ${addon.name} grozam`}
+            data-ocid={`addons.add_to_cart_button.${index + 1}`}
+          >
+            <Plus size={11} />
+          </button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 export function Offers({ onNavigate }: OffersProps) {
   const { data: offers = [], isLoading } = useActiveOffers();
+  const { data: addons = [] } = useAddonOffers();
 
   return (
     <div className="min-h-screen">
@@ -259,6 +334,40 @@ export function Offers({ onNavigate }: OffersProps) {
           )}
         </div>
       </section>
+
+      {/* Add-ons section */}
+      {addons.length > 0 && (
+        <section className="pb-16 px-6">
+          <div className="max-w-6xl mx-auto">
+            <hr className="gold-divider mb-12" />
+            <motion.div
+              initial={{ opacity: 0, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <p className="gold-label mb-2">Populāri papildinājumi</p>
+              <h2
+                className="font-serif mb-8"
+                style={{
+                  color: "#F3F0E6",
+                  fontSize: "clamp(1.2rem, 3vw, 1.8rem)",
+                }}
+              >
+                Bieži pievieno kopā
+              </h2>
+            </motion.div>
+            <div
+              className="flex gap-4 overflow-x-auto pb-4"
+              style={{ scrollbarWidth: "none" }}
+            >
+              {addons.map((addon, i) => (
+                <AddonCard key={addon.id} addon={addon} index={i} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       <Footer />
     </div>

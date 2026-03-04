@@ -71,7 +71,6 @@ function isAdminRoute(page: string) {
 // ── App ────────────────────────────────────────────────────────────────────
 export default function App() {
   const [path, setPath] = useState(getHashPath);
-  const [successOrderId, setSuccessOrderId] = useState<string | undefined>();
 
   useEffect(() => {
     const handler = () => setPath(getHashPath());
@@ -79,14 +78,14 @@ export default function App() {
     return () => window.removeEventListener("hashchange", handler);
   }, []);
 
-  const navigate = useCallback((to: string, state?: Record<string, string>) => {
-    if (to === "/success" && state?.orderId) {
-      setSuccessOrderId(state.orderId);
-    }
-    window.location.hash = `#${to}`;
-  }, []);
+  const navigate = useCallback(
+    (to: string, _state?: Record<string, string>) => {
+      window.location.hash = `#${to}`;
+    },
+    [],
+  );
 
-  const { page, params, search } = parseRoute(path);
+  const { page, params } = parseRoute(path);
 
   // Admin auth guard
   if (
@@ -116,12 +115,7 @@ export default function App() {
       case "checkout":
         return <Checkout offerId={params.id ?? ""} onNavigate={navigate} />;
       case "success":
-        return (
-          <Success
-            orderId={search.orderId || successOrderId}
-            onNavigate={navigate}
-          />
-        );
+        return <Success onNavigate={navigate} />;
       case "cart-checkout":
         return <CartCheckout onNavigate={navigate} />;
       case "admin/login":

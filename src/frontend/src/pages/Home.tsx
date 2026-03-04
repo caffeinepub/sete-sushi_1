@@ -1,4 +1,4 @@
-import { ArrowRight, MapPin } from "lucide-react";
+import { ArrowRight, ChefHat, Leaf, MapPin, Package2 } from "lucide-react";
 import { motion } from "motion/react";
 import { Footer } from "../components/layout/Footer";
 import { Header } from "../components/layout/Header";
@@ -108,7 +108,7 @@ export function Home({ onNavigate }: HomeProps) {
                 onClick={() => onNavigate("/offers")}
                 data-ocid="home.cta_button"
               >
-                Pasūtīt sushi
+                Apskatīt piedāvājumus
                 <ArrowRight size={16} />
               </button>
               <button
@@ -163,40 +163,37 @@ export function Home({ onNavigate }: HomeProps) {
       <section className="suede-section py-24">
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid md:grid-cols-3 gap-12">
-            {[
-              {
-                num: "01",
-                title: "Svaigums",
-                text: "Ikdienas piegādes no uzticamiem piegādātājiem. Tikai svaigākās sastāvdaļas.",
-              },
-              {
-                num: "02",
-                title: "Meistarsklase",
-                text: "Sushi šefi ar vairāk nekā 10 gadu pieredzi Japānas un Eiropas virtuvē.",
-              },
-              {
-                num: "03",
-                title: "Kompleksi",
-                text: "Rūpīgi veidoti seti 2–6 personām. Ideāli vakaram, sanāksmei vai svinībām.",
-              },
-            ].map((item, i) => (
+            {(
+              [
+                {
+                  icon: Leaf,
+                  title: "Sastāvdaļas",
+                  text: "Ikdienas piegādes no uzticamiem piegādātājiem. Izmantojam tikai kvalitatīvas sastāvdaļas.",
+                },
+                {
+                  icon: ChefHat,
+                  title: "Meistarība",
+                  text: "Sushi šefi ar vairāk nekā 10 gadu pieredzi.",
+                },
+                {
+                  icon: Package2,
+                  title: "Sushi komplekti",
+                  text: "Rūpīgi veidoti komplekti 2–6 personām.",
+                },
+              ] as const
+            ).map((item, i) => (
               <motion.div
-                key={item.num}
+                key={item.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.15, duration: 0.6 }}
                 className="space-y-4"
               >
-                <span
-                  className="font-serif text-5xl"
-                  style={{
-                    color: "rgba(199,163,90,0.25)",
-                    letterSpacing: "-0.02em",
-                  }}
-                >
-                  {item.num}
-                </span>
+                <item.icon
+                  size={28}
+                  style={{ color: "rgba(199,163,90,0.7)" }}
+                />
                 <h3
                   className="font-serif text-xl"
                   style={{

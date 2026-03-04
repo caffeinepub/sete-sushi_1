@@ -23,6 +23,8 @@ export interface Offer {
   imageUrl: string;
   active: boolean;
   sortOrder: number;
+  persons?: string; // e.g. "2–4 cilvēkiem"
+  isAddon?: boolean; // true for add-on items (rolls, drinks)
 }
 
 export type OrderStatus =

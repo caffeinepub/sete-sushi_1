@@ -1,5 +1,5 @@
-import { ArrowLeft, ChevronDown, Loader2 } from "lucide-react";
-import { motion } from "motion/react";
+import { ArrowLeft, CheckCircle2, ChevronDown, Loader2 } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { Footer } from "../components/layout/Footer";
 import { Header } from "../components/layout/Header";
@@ -52,14 +52,15 @@ export function CartCheckout({ onNavigate }: CartCheckoutProps) {
   const [consent, setConsent] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
+  const [successOrderId, setSuccessOrderId] = useState<string | null>(null);
   const submittedRef = useRef(false);
 
-  // Redirect to /offers if cart is empty on mount
+  // Redirect to /offers if cart is empty on mount (but not when success popup is showing)
   useEffect(() => {
-    if (totalItems === 0) {
+    if (totalItems === 0 && !successOrderId) {
       onNavigate("/offers");
     }
-  }, [totalItems, onNavigate]);
+  }, [totalItems, successOrderId, onNavigate]);
 
   const validate = () => {
     const errs: Record<string, string> = {};
@@ -118,7 +119,16 @@ export function CartCheckout({ onNavigate }: CartCheckoutProps) {
       }
 
       clearCart();
-      onNavigate("/success", { orderId });
+      // Reset form fields
+      setPhone("");
+      setDeliveryType("PICKUP");
+      setAddress("");
+      setTime(timeSlots[0]);
+      setNote("");
+      setConsent(false);
+      setErrors({});
+      setSuccessOrderId(orderId);
+      setSubmitting(false);
     } catch {
       submittedRef.current = false;
       setSubmitting(false);
@@ -587,6 +597,95 @@ export function CartCheckout({ onNavigate }: CartCheckoutProps) {
       </div>
 
       <Footer />
+
+      {/* ── Success Popup ─────────────────────────────────────────────── */}
+      <AnimatePresence>
+        {successOrderId && (
+          <motion.div
+            key="success-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="fixed inset-0 z-50 flex items-center justify-center px-4"
+            style={{
+              background: "rgba(5,5,6,0.85)",
+              backdropFilter: "blur(8px)",
+            }}
+            data-ocid="cart_checkout.success_state"
+          >
+            <motion.div
+              key="success-card"
+              initial={{ opacity: 0, scale: 0.92, y: 24 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.92, y: 24 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="relative w-full max-w-md rounded-sm p-8 text-center"
+              style={{
+                background: "#0B0B0D",
+                border: "1px solid rgba(34,197,94,0.35)",
+                boxShadow:
+                  "0 0 40px rgba(34,197,94,0.12), 0 8px 32px rgba(0,0,0,0.6)",
+              }}
+            >
+              {/* Green icon */}
+              <div className="flex justify-center mb-5">
+                <div
+                  className="w-16 h-16 rounded-full flex items-center justify-center"
+                  style={{
+                    background: "rgba(34,197,94,0.12)",
+                    border: "1px solid rgba(34,197,94,0.3)",
+                  }}
+                >
+                  <CheckCircle2 size={36} style={{ color: "#22c55e" }} />
+                </div>
+              </div>
+
+              {/* Title */}
+              <h2
+                className="font-serif mb-4"
+                style={{
+                  color: "#22c55e",
+                  fontSize: "clamp(1.3rem, 3vw, 1.7rem)",
+                }}
+              >
+                Pasūtījums pieņemts
+              </h2>
+
+              {/* Message */}
+              <p
+                className="mb-2 leading-relaxed"
+                style={{ color: "#F3F0E6", fontSize: "1rem" }}
+              >
+                Jūsu pasūtījums{" "}
+                <strong style={{ color: "#22c55e" }}>
+                  Nr. {successOrderId}
+                </strong>{" "}
+                ir pieņemts un tiek apstrādāts.
+              </p>
+              <p
+                className="mb-8 leading-relaxed"
+                style={{ color: "rgba(243,240,230,0.65)", fontSize: "0.95rem" }}
+              >
+                Tuvākajā laikā sazināsimies ar Jums.
+              </p>
+
+              {/* Button */}
+              <button
+                type="button"
+                onClick={() => {
+                  setSuccessOrderId(null);
+                  onNavigate("/");
+                }}
+                className="btn-gold w-full justify-center py-3"
+                data-ocid="cart_checkout.success_home_button"
+              >
+                Atgriezties uz sākumu
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

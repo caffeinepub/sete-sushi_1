@@ -3,7 +3,8 @@ import {
   addOffer,
   addOrder,
   deleteOffer,
-  getActiveOffers,
+  getAddonOffers,
+  getMainOffers,
   getOfferById,
   getOffers,
   getOrders,
@@ -18,7 +19,15 @@ import type { Offer, Order, OrderStatus, Settings } from "../lib/types";
 export function useActiveOffers() {
   return useQuery<Offer[]>({
     queryKey: ["offers", "active"],
-    queryFn: getActiveOffers,
+    queryFn: getMainOffers,
+    staleTime: 30_000,
+  });
+}
+
+export function useAddonOffers() {
+  return useQuery<Offer[]>({
+    queryKey: ["offers", "addons"],
+    queryFn: getAddonOffers,
     staleTime: 30_000,
   });
 }

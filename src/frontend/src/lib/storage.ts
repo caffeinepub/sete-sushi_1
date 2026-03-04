@@ -29,6 +29,7 @@ const DEFAULT_OFFERS: Offer[] = [
     imageUrl: "/assets/generated/sete-01-placeholder.dim_1200x800.jpg",
     active: true,
     sortOrder: 1,
+    persons: "Ideāli 2–4 cilvēkiem",
   },
   {
     id: "sete-02",
@@ -50,6 +51,7 @@ const DEFAULT_OFFERS: Offer[] = [
     imageUrl: "/assets/generated/sete-01-placeholder.dim_1200x800.jpg",
     active: true,
     sortOrder: 2,
+    persons: "Ideāli 4–6 cilvēkiem",
   },
   {
     id: "sete-vege",
@@ -69,6 +71,100 @@ const DEFAULT_OFFERS: Offer[] = [
     imageUrl: "/assets/generated/sete-01-placeholder.dim_1200x800.jpg",
     active: true,
     sortOrder: 3,
+    persons: "Ideāli 1–2 cilvēkiem",
+  },
+  // Add-ons: rolls
+  {
+    id: "addon-spicy-tuna",
+    name: "Spicy Tuna Roll",
+    pieces: "8 gab.",
+    price: 8,
+    description: "Pikants tunzivju rullis ar sriracha mērci.",
+    composition: [],
+    imageUrl: "/assets/generated/sete-01-placeholder.dim_1200x800.jpg",
+    active: true,
+    sortOrder: 10,
+    persons: "",
+    isAddon: true,
+  },
+  {
+    id: "addon-salmon",
+    name: "Salmon Roll",
+    pieces: "8 gab.",
+    price: 7,
+    description: "Klasiskais laša rullis.",
+    composition: [],
+    imageUrl: "/assets/generated/sete-01-placeholder.dim_1200x800.jpg",
+    active: true,
+    sortOrder: 11,
+    persons: "",
+    isAddon: true,
+  },
+  {
+    id: "addon-crunch",
+    name: "Crunch Roll",
+    pieces: "8 gab.",
+    price: 8,
+    description: "Kraukšķīgais tempura rullis.",
+    composition: [],
+    imageUrl: "/assets/generated/sete-01-placeholder.dim_1200x800.jpg",
+    active: true,
+    sortOrder: 12,
+    persons: "",
+    isAddon: true,
+  },
+  // Add-ons: drinks
+  {
+    id: "addon-pepsi",
+    name: "Pepsi",
+    pieces: "330ml",
+    price: 2,
+    description: "Pepsi Cola 330ml.",
+    composition: [],
+    imageUrl: "/assets/generated/sete-01-placeholder.dim_1200x800.jpg",
+    active: true,
+    sortOrder: 20,
+    persons: "",
+    isAddon: true,
+  },
+  {
+    id: "addon-pepsi-max",
+    name: "Pepsi Max",
+    pieces: "330ml",
+    price: 2,
+    description: "Pepsi Max bez cukura 330ml.",
+    composition: [],
+    imageUrl: "/assets/generated/sete-01-placeholder.dim_1200x800.jpg",
+    active: true,
+    sortOrder: 21,
+    persons: "",
+    isAddon: true,
+  },
+  {
+    id: "addon-mirinda",
+    name: "Mirinda",
+    pieces: "330ml",
+    price: 2,
+    description: "Mirinda apelsīnu 330ml.",
+    composition: [],
+    imageUrl: "/assets/generated/sete-01-placeholder.dim_1200x800.jpg",
+    active: true,
+    sortOrder: 22,
+    persons: "",
+    isAddon: true,
+  },
+  {
+    id: "addon-water",
+    name: "Ūdens",
+    pieces: "500ml",
+    price: 1,
+    description: "Minerālūdens 500ml.",
+    composition: [],
+    imageUrl: "/assets/generated/sete-01-placeholder.dim_1200x800.jpg",
+    active: true,
+    sortOrder: 23,
+    persons: "",
+    isAddon: true,
   },
 ];
 
@@ -137,6 +233,14 @@ export function getActiveOffers(): Offer[] {
   return getOffers()
     .filter((o) => o.active)
     .sort((a, b) => a.sortOrder - b.sortOrder);
+}
+
+export function getMainOffers(): Offer[] {
+  return getActiveOffers().filter((o) => !o.isAddon);
+}
+
+export function getAddonOffers(): Offer[] {
+  return getActiveOffers().filter((o) => o.isAddon);
 }
 
 export function getOfferById(id: string): Offer | null {
