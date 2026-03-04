@@ -169,7 +169,7 @@ function OfferCard({
             data-ocid={`offers.add_to_cart_button.${index + 1}`}
           >
             <ShoppingBag size={13} />
-            Pievienot
+            Pievienot grozam
           </button>
         </div>
       </div>

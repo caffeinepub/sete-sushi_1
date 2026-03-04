@@ -24,6 +24,7 @@ function CheckoutBackButton({ onClick }: { onClick: () => void }) {
 }
 import { Footer } from "../components/layout/Footer";
 import { Header } from "../components/layout/Header";
+import { useCart } from "../context/CartContext";
 import { useAddOrder, useOffer } from "../hooks/useQueries";
 import {
   generateOrderId,
@@ -40,6 +41,7 @@ interface CheckoutProps {
 export function Checkout({ offerId, onNavigate }: CheckoutProps) {
   const { data: offer, isLoading } = useOffer(offerId);
   const addOrder = useAddOrder();
+  const { clearCart } = useCart();
   const timeSlots = generateTimeSlots();
 
   const [phone, setPhone] = useState("");
@@ -104,6 +106,7 @@ export function Checkout({ offerId, onNavigate }: CheckoutProps) {
         window.open(waLink, "_blank", "noopener,noreferrer");
       }
 
+      clearCart();
       onNavigate("/success", { orderId });
     } catch {
       // Reset on error so user can retry

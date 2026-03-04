@@ -37,22 +37,26 @@ export function Success({ orderId, onNavigate }: SuccessProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <p className="gold-label mb-4">Pasūtījums pieņemts</p>
             <h1
-              className="font-serif mb-4"
+              className="font-serif mb-6"
               style={{
                 color: "#F3F0E6",
                 fontSize: "clamp(1.8rem, 4vw, 2.8rem)",
               }}
             >
-              Paldies par pasūtījumu!
+              Pasūtījums pieņemts
             </h1>
+            <p
+              className="text-sm leading-relaxed mb-1"
+              style={{ color: "rgba(243,240,230,0.65)" }}
+            >
+              Paldies par jūsu pasūtījumu.
+            </p>
             <p
               className="text-sm leading-relaxed mb-3"
               style={{ color: "rgba(243,240,230,0.55)" }}
             >
-              Mēs ar jums sazināsimies tuvāko minūšu laikā, lai apstiprinātu
-              pasūtījumu.
+              Ar jums sazināsimies tuvākajā laikā.
             </p>
 
             {orderId && (

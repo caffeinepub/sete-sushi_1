@@ -201,7 +201,7 @@ export function OfferDetail({ id, onNavigate }: OfferDetailProps) {
 
                 <button
                   type="button"
-                  className="btn-gold flex items-center gap-2 w-full justify-center py-4 mb-3"
+                  className="btn-gold flex items-center gap-2 w-full justify-center py-4"
                   onClick={() => {
                     addToCart(offer, qty);
                     toast.success(`${offer.name} pievienots grozam`, {
@@ -213,15 +213,6 @@ export function OfferDetail({ id, onNavigate }: OfferDetailProps) {
                 >
                   <ShoppingBag size={16} />
                   Pievienot grozam
-                </button>
-
-                <button
-                  type="button"
-                  className="btn-ghost-gold flex items-center gap-2 w-full justify-center py-3 text-xs"
-                  onClick={() => onNavigate(`/checkout/${offer.id}`)}
-                  data-ocid="offer_detail.direct_order_button"
-                >
-                  Pasūtīt tieši
                 </button>
               </motion.div>
             </div>
