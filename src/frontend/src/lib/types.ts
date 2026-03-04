@@ -1,5 +1,18 @@
 // ── SETE Domain Types ──────────────────────────────────────────────────────
 
+export interface CartItem {
+  offer: Offer;
+  quantity: number;
+}
+
+export interface CartOrderItem {
+  offerId: string;
+  offerName: string;
+  pieces: string;
+  price: number;
+  quantity: number;
+}
+
 export interface Offer {
   id: string;
   name: string;
@@ -38,6 +51,7 @@ export interface Order {
   note: string;
   status: OrderStatus;
   createdAt: string; // ISO
+  items?: CartOrderItem[]; // multi-item cart order
 }
 
 export interface WorkingHours {

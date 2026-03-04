@@ -1,6 +1,10 @@
 import { Toaster } from "@/components/ui/sonner";
 import { useCallback, useEffect, useState } from "react";
+import { CartDrawer } from "./components/ui/CartDrawer";
+import { CartMobileBar } from "./components/ui/CartMobileBar";
+import { CartProvider } from "./context/CartContext";
 import { isAdminAuthenticated, isFirstLogin } from "./lib/storage";
+import { CartCheckout } from "./pages/CartCheckout";
 import { Checkout } from "./pages/Checkout";
 import { Home } from "./pages/Home";
 import { OfferDetail } from "./pages/OfferDetail";
@@ -51,6 +55,10 @@ function parseRoute(path: string): {
   }
   if (segments[0] === "offers") return { page: "offers", params: {}, search };
   if (segments[0] === "success") return { page: "success", params: {}, search };
+  if (segments[0] === "cart-checkout")
+    return { page: "cart-checkout", params: {}, search };
+  if (segments[0] === "cart")
+    return { page: "cart-checkout", params: {}, search };
 
   return { page: "home", params: {}, search };
 }
@@ -114,6 +122,8 @@ export default function App() {
             onNavigate={navigate}
           />
         );
+      case "cart-checkout":
+        return <CartCheckout onNavigate={navigate} />;
       case "admin/login":
         return <AdminLogin onNavigate={navigate} />;
       case "admin/":
@@ -147,7 +157,7 @@ export default function App() {
   };
 
   return (
-    <>
+    <CartProvider>
       <Toaster
         position="bottom-right"
         toastOptions={{
@@ -158,7 +168,9 @@ export default function App() {
           },
         }}
       />
+      <CartDrawer onNavigate={navigate} />
+      <CartMobileBar />
       {renderPage()}
-    </>
+    </CartProvider>
   );
 }

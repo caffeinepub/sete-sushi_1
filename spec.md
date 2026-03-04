@@ -2,68 +2,50 @@
 
 ## Current State
 
-Existing SPA with:
-- Home page with hero section containing "Michelin līmeņa sushi." text
-- Offers page with product cards (grid layout)
-- OfferDetail page
-- Checkout page with delivery/pickup logic, phone validation, time slots
-- Success page with basic confirmation text
-- Admin panel: AdminOrders (with status filter + modal), AdminOffers, AdminSettings, AdminDashboard, AdminLogin, AdminChangePassword
-- Footer with working hours, address, phone
-- localStorage-based storage with full CRUD for offers, orders, settings, auth
-- OrderStatus type: NEW | CONFIRMED | PAID | IN_PROGRESS | DONE | CANCELED
-- generateOrderId() uses Math.random() — not cryptographically unique
-- Hero is a two-column layout (text + image), no fullscreen background
-- Product cards show image, pieces label, name, price, description, two buttons
-- No sticky mobile order bar
-- No duplicate submission prevention on checkout
+Full-stack sushi ordering SPA with:
+- Hash-based router (Home, Offers, OfferDetail, Checkout, Success, Admin pages)
+- localStorage storage adapter (offers, orders, settings, admin auth)
+- Single-item checkout: user picks one offer → fills form → submits order
+- Header with SETE logo + nav links (no cart)
+- Seed data: 3 offers (SETE 01, SETE 02, SETE Vege)
+- Order type: `{ id, offerId, offerName, pieces, price, deliveryType, phone, address, time, note, status, createdAt }`
+- WhatsApp link generation after order submit
+- Admin panel: offers CRUD, orders list with status update, settings
 
 ## Requested Changes (Diff)
 
 ### Add
-- Hero fullscreen background image (`/assets/generated/sete-hero-bg.dim_1920x1080.jpg`) with subtle dark gradient overlay
-- Second CTA button "SKATĪT KOMPLEKTUS" on hero (alongside "PASŪTĪT SUSHI")
-- "Populārākais" badge on product cards (show on first/featured card)
-- Sticky mobile order bar on OfferDetail / Checkout pages showing offer name + price + "PASŪTĪT" button
-- `smooth-scroll` behavior on `html` element via CSS
-- Hover glow effect on gold buttons
-- Card hover animation (lift + subtle gold border brighten)
-- Duplicate submission prevention flag in Checkout (disable submit button after click until navigation)
-- Unique order ID using timestamp + random combo (e.g. `ST-${Date.now().toString(36).toUpperCase()}-${random4}`)
-- Order statuses updated to: NEW | CONFIRMED | PREPARING | READY | COMPLETED (keep PAID, IN_PROGRESS, DONE, CANCELED as aliases or replace in admin display)
+- `CartContext` (React context) — holds `CartItem[]` with `{ offer: Offer, quantity: number }`, exposes `addToCart`, `removeFromCart`, `updateQty`, `clearCart`, `totalItems`, `totalPrice`
+- Cart icon button in Header (top-right, desktop and mobile) showing item count badge when cart has items
+- Cart drawer/sheet that slides in from right when cart icon is clicked: lists items with qty controls, subtotal, "Noformēt pasūtījumu" button → navigates to `/cart-checkout`
+- `/cart-checkout` route in App.tsx — new `CartCheckout` page that uses cart items instead of a single offer
+- Quantity selector on each product card in Offers page: `[-] N [+]` + "Pievienot grozam" button
+- Sticky mobile cart bar (bottom, fixed): shown only when cart has items on mobile, shows "Jūsu pasūtījums • N preces • X€  [ SKATĪT GROZU ]"
+- `CartCheckout` page: shows full cart summary (all items, quantities, subtotals, grand total) + same form fields (phone, delivery type, address, time, note, consent) + submit
+- WhatsApp message updated to include all cart items
+- New Order type: extend to support `items: CartOrderItem[]` where `CartOrderItem = { offerId, offerName, pieces, price, quantity }` alongside keeping backward compat single-offer fields
+- `useCart` hook that reads from CartContext
 
 ### Modify
-- **Home hero**: Remove "Michelin līmeņa sushi." line; replace sub-headline with "Premium sushi komplekti Rīgā." and tagline "Pasūti tiešsaistē — saņem uz vietas vai ar piegādi."; rename CTA from "Apskatīt piedāvājumus" to "PASŪTĪT SUSHI"; add second button "SKATĪT KOMPLEKTUS" linking to /offers; hero becomes full-screen with background image
-- **Checkout labels**: "Saņemšanas veids" label already present but options text: PICKUP option → "Saņemt uz vietas — Blaumaņa iela 34-2, Rīga"; DELIVERY option → "Piegāde uz adresi"; time label "VĒLAMAIS LAIKS"; comment label "KOMENTĀRS (neobligāts)"; comment placeholder "Īpaši vēlējumi vai piegādes instrukcijas"; time slot first option label → "ASAP"; subsequent slots → "Izvēlēties laiku: HH:MM" format
-- **Success page**: Main heading → "Paldies par pasūtījumu!"; body text → "Mēs ar jums sazināsimies tuvāko minūšu laikā, lai apstiprinātu pasūtījumu."; back button label → "ATGRIEZTIES UZ SĀKUMU"
-- **Product cards**: Price font size larger (2rem+); add hover animation (translateY(-4px) + box-shadow lift); show "Populārākais" gold badge on first card (sortOrder=1 or index=0)
-- **Admin orders**: Update STATUS_LABELS to include PREPARING → "Gatavo", READY → "Gatavs", COMPLETED → "Pabeigts"; keep existing statuses, add new ones to the type and labels map; admin order list shows: order ID, time (createdAt formatted), phone, order type (Piegāde/Saņemt uz vietas), status
-- **generateOrderId**: Use timestamp-based unique ID for better uniqueness
-- **Footer brand tagline**: "Premium sushi Rīgā" (already close, minor cleanup)
-- **Product images**: Ensure `loading="lazy"` on all offer/card images; hero background uses CSS background-image for performance
+- `Header.tsx` — add cart icon (ShoppingCart from lucide) with gold badge showing item count; clicking opens cart drawer; accept `onCartOpen` prop or use context
+- `Offers.tsx` / `OfferCard` — replace single "Pasūtīt" button with qty selector `[-] 1 [+]` + "Pievienot grozam" button; keep "Uzzināt vairāk" link
+- `App.tsx` — wrap app in `CartProvider`; add `/cart-checkout` route; add `/cart` route alias
+- `storage.ts` — update `generateWhatsAppLink` to accept multi-item orders; update `addOrder` to handle extended Order type
+- `types.ts` — extend `Order` to include `items?: CartOrderItem[]`; add `CartOrderItem` type; add `CartItem` type
+- Existing `Checkout.tsx` — keep working for direct `/checkout/:id` flow (single item); also pre-populate cart if arriving from OfferDetail
 
 ### Remove
-- The text "Michelin līmeņa sushi." from Home hero
-- The old single-column hero text layout (replace with fullscreen background hero)
+- Nothing removed; existing single-item checkout remains functional as fallback
 
 ## Implementation Plan
 
-1. **index.css / global styles**: Add `html { scroll-behavior: smooth; }`. Add button hover glow keyframe. Add card hover animation classes.
-
-2. **Home.tsx**: Replace hero section with fullscreen background image hero using `sete-hero-bg.dim_1920x1080.jpg`. Remove "Michelin līmeņa sushi." text. Update copy. Add two CTA buttons (PASŪTĪT SUSHI → /offers, SKATĪT KOMPLEKTUS → /offers).
-
-3. **Offers.tsx / OfferCard**: Add hover animation (whileHover in framer-motion). Enlarge price. Add "Populārākais" badge on index=0 card. Ensure lazy loading on images.
-
-4. **Checkout.tsx**: Update delivery option labels. Update time label and comment label/placeholder. Add duplicate submission guard (ref/flag). Update first time slot label from "Pēc iespējas ātrāk (ASAP)" display. Prevent double submit.
-
-5. **Success.tsx**: Update heading, body text, button label.
-
-6. **AdminOrders.tsx**: Update STATUS_LABELS to add PREPARING/READY/COMPLETED. Ensure order list columns show ID, time, phone, type, status clearly.
-
-7. **lib/types.ts**: Add PREPARING | READY | COMPLETED to OrderStatus union. Keep existing ones.
-
-8. **lib/storage.ts**: Update generateOrderId to use timestamp+random for better uniqueness. Update STATUS display maps.
-
-9. **OfferDetail.tsx + Checkout.tsx**: Add sticky mobile order bar (fixed bottom bar on mobile showing offer name, price, and order button).
-
-10. **Global CSS**: Button hover glow (box-shadow pulse on gold buttons), card hover lift.
+1. Add `CartItem` and `CartOrderItem` to `types.ts`; extend `Order` with optional `items` field
+2. Create `src/context/CartContext.tsx` with CartProvider and useCart hook
+3. Update `storage.ts` → `generateWhatsAppLink` to handle multi-item orders
+4. Update `Header.tsx` to consume cart context, show cart icon with count badge, open cart drawer
+5. Create `CartDrawer` component (slides from right): item list with qty controls, total, CTA button
+6. Update `OfferCard` in `Offers.tsx`: add qty state, `[-] N [+]` selector, "Pievienot grozam" button with toast feedback
+7. Create `CartCheckout.tsx` page: cart summary table + existing form fields + submit logic
+8. Add `CartMobileBar` component: sticky bottom bar on mobile when cart non-empty
+9. Update `App.tsx`: wrap in CartProvider, add `/cart-checkout` and `/cart` routes
+10. Typecheck and build validation

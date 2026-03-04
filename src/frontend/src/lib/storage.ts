@@ -266,10 +266,28 @@ export function generateWhatsAppLink(order: Order): string {
   const addressLine =
     order.deliveryType === "DELIVERY" ? order.address : "Blaumaņa 34-2, Rīga";
 
+  let itemsSection: string;
+  if (order.items && order.items.length > 0) {
+    // Multi-item cart order
+    const itemLines = order.items
+      .map(
+        (item) =>
+          `- ${item.offerName} (${item.pieces}) × ${item.quantity} — ${item.price * item.quantity}€`,
+      )
+      .join("\n");
+    const total = order.items.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0,
+    );
+    itemsSection = `Komplekti:\n${itemLines}\nKopsumma: ${total}€`;
+  } else {
+    // Legacy single-item order
+    itemsSection = `- Komplekts: ${order.offerName} (${order.pieces})\n- Cena: ${order.price}€`;
+  }
+
   const msg = [
     "SETE pasūtījums:",
-    `- Komplekts: ${order.offerName} (${order.pieces})`,
-    `- Cena: ${order.price}€`,
+    itemsSection,
     `- Saņemšana: ${deliveryLabel}`,
     `- Adrese: ${addressLine}`,
     `- Vēlamais laiks: ${order.time}`,

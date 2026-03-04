@@ -1,7 +1,10 @@
-import { ArrowRight, ShoppingBag } from "lucide-react";
+import { Minus, Plus, ShoppingBag } from "lucide-react";
 import { motion } from "motion/react";
+import { useState } from "react";
+import { toast } from "sonner";
 import { Footer } from "../components/layout/Footer";
 import { Header } from "../components/layout/Header";
+import { useCart } from "../context/CartContext";
 import { useActiveOffers } from "../hooks/useQueries";
 import type { Offer } from "../lib/types";
 
@@ -18,6 +21,17 @@ function OfferCard({
   index: number;
   onNavigate: (path: string) => void;
 }) {
+  const [qty, setQty] = useState(1);
+  const { addToCart } = useCart();
+
+  const handleAddToCart = () => {
+    addToCart(offer, qty);
+    toast.success(`${offer.name} pievienots grozam`, {
+      description: `${qty} × ${offer.price}€`,
+    });
+    setQty(1);
+  };
+
   return (
     <motion.article
       className="premium-card overflow-hidden flex flex-col"
@@ -96,13 +110,49 @@ function OfferCard({
         </div>
 
         <p
-          className="text-sm flex-1 mb-6 leading-relaxed"
+          className="text-sm flex-1 mb-5 leading-relaxed"
           style={{ color: "rgba(243,240,230,0.55)" }}
         >
           {offer.description.length > 100
             ? `${offer.description.slice(0, 100)}…`
             : offer.description}
         </p>
+
+        {/* Qty selector row */}
+        <div className="flex items-center gap-2 mb-4">
+          <button
+            type="button"
+            onClick={() => setQty((v) => Math.max(1, v - 1))}
+            className="w-8 h-8 flex items-center justify-center rounded-sm transition-colors duration-150"
+            style={{
+              border: "1px solid rgba(199,163,90,0.3)",
+              color: "rgba(199,163,90,0.7)",
+            }}
+            aria-label="Samazināt daudzumu"
+            data-ocid={`offers.qty_decrease.${index + 1}`}
+          >
+            <Minus size={12} />
+          </button>
+          <span
+            className="w-8 text-center text-sm"
+            style={{ color: "#F3F0E6" }}
+          >
+            {qty}
+          </span>
+          <button
+            type="button"
+            onClick={() => setQty((v) => Math.min(10, v + 1))}
+            className="w-8 h-8 flex items-center justify-center rounded-sm transition-colors duration-150"
+            style={{
+              border: "1px solid rgba(199,163,90,0.3)",
+              color: "rgba(199,163,90,0.7)",
+            }}
+            aria-label="Palielināt daudzumu"
+            data-ocid={`offers.qty_increase.${index + 1}`}
+          >
+            <Plus size={12} />
+          </button>
+        </div>
 
         <div className="flex gap-3">
           <button
@@ -115,10 +165,11 @@ function OfferCard({
           <button
             type="button"
             className="btn-gold flex items-center gap-1.5 px-4 py-2.5 text-xs"
-            onClick={() => onNavigate(`/checkout/${offer.id}`)}
+            onClick={handleAddToCart}
+            data-ocid={`offers.add_to_cart_button.${index + 1}`}
           >
             <ShoppingBag size={13} />
-            Pasūtīt
+            Pievienot
           </button>
         </div>
       </div>

@@ -1,6 +1,7 @@
-import { Menu, X } from "lucide-react";
+import { Menu, ShoppingCart, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
+import { useCart } from "../../context/CartContext";
 
 interface HeaderProps {
   currentHash?: string;
@@ -9,6 +10,7 @@ interface HeaderProps {
 export function Header({ currentHash = "" }: HeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { totalItems, openCart } = useCart();
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 30);
@@ -59,18 +61,23 @@ export function Header({ currentHash = "" }: HeaderProps) {
               />
             );
           })}
+          {/* Cart button — desktop */}
+          <CartIconButton totalItems={totalItems} onClick={openCart} />
         </nav>
 
-        {/* Mobile toggle */}
-        <button
-          type="button"
-          className="md:hidden text-ivory p-1"
-          onClick={() => setMobileOpen((v) => !v)}
-          aria-label={mobileOpen ? "Aizvērt izvēlni" : "Atvērt izvēlni"}
-          style={{ color: "rgba(243,240,230,0.8)" }}
-        >
-          {mobileOpen ? <X size={22} /> : <Menu size={22} />}
-        </button>
+        {/* Mobile right side: cart + hamburger */}
+        <div className="md:hidden flex items-center gap-3">
+          <CartIconButton totalItems={totalItems} onClick={openCart} />
+          <button
+            type="button"
+            className="text-ivory p-1"
+            onClick={() => setMobileOpen((v) => !v)}
+            aria-label={mobileOpen ? "Aizvērt izvēlni" : "Atvērt izvēlni"}
+            style={{ color: "rgba(243,240,230,0.8)" }}
+          >
+            {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu */}
@@ -110,6 +117,42 @@ export function Header({ currentHash = "" }: HeaderProps) {
         )}
       </AnimatePresence>
     </header>
+  );
+}
+
+function CartIconButton({
+  totalItems,
+  onClick,
+}: {
+  totalItems: number;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="relative p-1.5 transition-colors duration-200"
+      aria-label={`Grozs${totalItems > 0 ? ` (${totalItems})` : ""}`}
+      style={{ color: "rgba(243,240,230,0.7)" }}
+      data-ocid="nav.cart_button"
+    >
+      <ShoppingCart size={20} />
+      {totalItems > 0 && (
+        <span
+          className="absolute -top-1 -right-1 flex items-center justify-center rounded-full text-xs font-bold leading-none"
+          style={{
+            background: "#C7A35A",
+            color: "#050506",
+            minWidth: "17px",
+            height: "17px",
+            fontSize: "10px",
+            padding: "0 3px",
+          }}
+        >
+          {totalItems > 9 ? "9+" : totalItems}
+        </span>
+      )}
+    </button>
   );
 }
 

@@ -1,8 +1,10 @@
-import { ArrowLeft, Check, ShoppingBag } from "lucide-react";
+import { ArrowLeft, Check, Minus, Plus, ShoppingBag } from "lucide-react";
 import { motion } from "motion/react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { Footer } from "../components/layout/Footer";
 import { Header } from "../components/layout/Header";
+import { useCart } from "../context/CartContext";
 import { useOffer } from "../hooks/useQueries";
 
 function BackButton({
@@ -39,6 +41,8 @@ interface OfferDetailProps {
 
 export function OfferDetail({ id, onNavigate }: OfferDetailProps) {
   const { data: offer, isLoading } = useOffer(id);
+  const { addToCart } = useCart();
+  const [qty, setQty] = useState(1);
 
   return (
     <div className="min-h-screen">
@@ -159,14 +163,65 @@ export function OfferDetail({ id, onNavigate }: OfferDetailProps) {
                   </div>
                 )}
 
+                {/* Qty selector + add to cart */}
+                <div className="flex items-center gap-3 mb-4">
+                  <button
+                    type="button"
+                    onClick={() => setQty((v) => Math.max(1, v - 1))}
+                    className="w-9 h-9 flex items-center justify-center rounded-sm transition-colors duration-150"
+                    style={{
+                      border: "1px solid rgba(199,163,90,0.3)",
+                      color: "rgba(199,163,90,0.7)",
+                    }}
+                    aria-label="Samazināt daudzumu"
+                    data-ocid="offer_detail.qty_decrease"
+                  >
+                    <Minus size={14} />
+                  </button>
+                  <span
+                    className="w-8 text-center"
+                    style={{ color: "#F3F0E6", fontSize: "16px" }}
+                  >
+                    {qty}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setQty((v) => Math.min(10, v + 1))}
+                    className="w-9 h-9 flex items-center justify-center rounded-sm transition-colors duration-150"
+                    style={{
+                      border: "1px solid rgba(199,163,90,0.3)",
+                      color: "rgba(199,163,90,0.7)",
+                    }}
+                    aria-label="Palielināt daudzumu"
+                    data-ocid="offer_detail.qty_increase"
+                  >
+                    <Plus size={14} />
+                  </button>
+                </div>
+
                 <button
                   type="button"
-                  className="btn-gold flex items-center gap-2 w-full justify-center py-4"
-                  onClick={() => onNavigate(`/checkout/${offer.id}`)}
+                  className="btn-gold flex items-center gap-2 w-full justify-center py-4 mb-3"
+                  onClick={() => {
+                    addToCart(offer, qty);
+                    toast.success(`${offer.name} pievienots grozam`, {
+                      description: `${qty} × ${offer.price}€`,
+                    });
+                    setQty(1);
+                  }}
                   data-ocid="offer_detail.order_button"
                 >
                   <ShoppingBag size={16} />
-                  Pasūtīt šo komplektu
+                  Pievienot grozam
+                </button>
+
+                <button
+                  type="button"
+                  className="btn-ghost-gold flex items-center gap-2 w-full justify-center py-3 text-xs"
+                  onClick={() => onNavigate(`/checkout/${offer.id}`)}
+                  data-ocid="offer_detail.direct_order_button"
+                >
+                  Pasūtīt tieši
                 </button>
               </motion.div>
             </div>
@@ -174,10 +229,10 @@ export function OfferDetail({ id, onNavigate }: OfferDetailProps) {
         </div>
       </div>
 
-      {/* Sticky mobile order bar */}
+      {/* Sticky mobile order bar — only when no cart items (cart bar handles it otherwise) */}
       {offer && (
         <div
-          className="fixed bottom-0 left-0 right-0 md:hidden z-40 flex items-center justify-between px-4 py-3"
+          className="fixed bottom-0 left-0 right-0 md:hidden z-30 flex items-center justify-between px-4 py-3"
           style={{
             background: "rgba(5,5,6,0.95)",
             borderTop: "1px solid rgba(199,163,90,0.2)",
@@ -199,10 +254,14 @@ export function OfferDetail({ id, onNavigate }: OfferDetailProps) {
           <button
             type="button"
             className="btn-gold px-6 py-2.5 text-xs"
-            onClick={() => onNavigate(`/checkout/${offer.id}`)}
+            onClick={() => {
+              addToCart(offer, qty);
+              toast.success(`${offer.name} pievienots grozam`);
+              setQty(1);
+            }}
             data-ocid="offer_detail.mobile_order_button"
           >
-            Pasūtīt
+            Pievienot
           </button>
         </div>
       )}
