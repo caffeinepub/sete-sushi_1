@@ -287,13 +287,13 @@ export function generateWhatsAppLink(order: Order): string {
 
 // ── Utility ────────────────────────────────────────────────────────────────
 export function generateOrderId(): string {
-  const prefix = "ST";
-  const num = Math.floor(Math.random() * 90000) + 10000;
-  return `${prefix}${num}`;
+  const ts = Date.now().toString(36).toUpperCase();
+  const rand = Math.random().toString(36).slice(2, 6).toUpperCase();
+  return `ST-${ts}-${rand}`;
 }
 
 export function generateTimeSlots(): string[] {
-  const slots: string[] = ["Pēc iespējas ātrāk (ASAP)"];
+  const slots: string[] = ["ASAP"];
   const now = new Date();
   const minutes = now.getMinutes();
   const next = 15 - (minutes % 15);

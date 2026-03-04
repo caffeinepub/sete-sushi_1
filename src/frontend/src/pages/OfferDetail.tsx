@@ -44,7 +44,7 @@ export function OfferDetail({ id, onNavigate }: OfferDetailProps) {
     <div className="min-h-screen">
       <Header currentHash={`/offer/${id}`} />
 
-      <div className="pt-28 pb-16 px-6">
+      <div className="pt-28 pb-16 md:pb-16 pb-24 px-6">
         <div className="max-w-5xl mx-auto">
           {/* Back */}
           <BackButton
@@ -173,6 +173,39 @@ export function OfferDetail({ id, onNavigate }: OfferDetailProps) {
           )}
         </div>
       </div>
+
+      {/* Sticky mobile order bar */}
+      {offer && (
+        <div
+          className="fixed bottom-0 left-0 right-0 md:hidden z-40 flex items-center justify-between px-4 py-3"
+          style={{
+            background: "rgba(5,5,6,0.95)",
+            borderTop: "1px solid rgba(199,163,90,0.2)",
+            backdropFilter: "blur(10px)",
+          }}
+        >
+          <div>
+            <div
+              style={{ color: "#F3F0E6", fontSize: "13px", fontWeight: 600 }}
+            >
+              {offer.name}
+            </div>
+            <div
+              style={{ color: "#C7A35A", fontSize: "15px", fontWeight: 700 }}
+            >
+              {offer.price}€
+            </div>
+          </div>
+          <button
+            type="button"
+            className="btn-gold px-6 py-2.5 text-xs"
+            onClick={() => onNavigate(`/checkout/${offer.id}`)}
+            data-ocid="offer_detail.mobile_order_button"
+          >
+            Pasūtīt
+          </button>
+        </div>
+      )}
 
       <Footer />
     </div>

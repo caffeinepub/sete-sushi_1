@@ -1,4 +1,4 @@
-import { ArrowRight, MapPin, Star } from "lucide-react";
+import { ArrowRight, MapPin } from "lucide-react";
 import { motion } from "motion/react";
 import { Footer } from "../components/layout/Footer";
 import { Header } from "../components/layout/Header";
@@ -12,21 +12,22 @@ export function Home({ onNavigate }: HomeProps) {
     <div className="min-h-screen">
       <Header currentHash="/" />
 
-      {/* Hero */}
-      <section className="min-h-screen flex items-center justify-center relative overflow-hidden pt-20">
-        {/* Background accent */}
+      {/* Hero — fullscreen bg image */}
+      <section
+        className="min-h-screen flex items-center relative overflow-hidden"
+        style={{
+          backgroundImage:
+            "url('/assets/generated/sete-hero-bg.dim_1920x1080.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        {/* Dark gradient overlay — text side only, leaves right side brighter */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              "radial-gradient(ellipse at 70% 40%, rgba(199,163,90,0.04) 0%, transparent 60%)",
-          }}
-        />
-        <div
-          className="absolute top-0 left-0 w-full h-full pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(ellipse at 20% 80%, rgba(26,11,16,0.5) 0%, transparent 50%)",
+              "linear-gradient(to right, rgba(5,5,6,0.88) 0%, rgba(5,5,6,0.65) 50%, rgba(5,5,6,0.25) 100%)",
           }}
         />
 
@@ -35,12 +36,11 @@ export function Home({ onNavigate }: HomeProps) {
           className="absolute left-6 md:left-12 top-1/4 h-48 w-px"
           style={{
             background:
-              "linear-gradient(180deg, transparent, rgba(199,163,90,0.3), transparent)",
+              "linear-gradient(180deg, transparent, rgba(199,163,90,0.4), transparent)",
           }}
         />
 
-        <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center w-full">
-          {/* Text side */}
+        <div className="relative z-10 max-w-3xl mx-auto px-6 py-32 w-full">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
@@ -72,7 +72,7 @@ export function Home({ onNavigate }: HomeProps) {
             <motion.p
               className="font-serif text-xl md:text-2xl mb-3"
               style={{
-                color: "rgba(243,240,230,0.75)",
+                color: "rgba(243,240,230,0.88)",
                 fontWeight: 300,
                 letterSpacing: "0.02em",
               }}
@@ -80,20 +80,20 @@ export function Home({ onNavigate }: HomeProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.7 }}
             >
-              Michelin līmeņa sushi.
+              Premium sushi komplekti Rīgā.
             </motion.p>
 
             <motion.p
               className="text-sm mb-10"
               style={{
-                color: "rgba(243,240,230,0.45)",
-                letterSpacing: "0.08em",
+                color: "rgba(243,240,230,0.55)",
+                letterSpacing: "0.05em",
               }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.55, duration: 0.7 }}
             >
-              Pasūtī tiešsaistē. Saņem vai pievedīnām.
+              Pasūti tiešsaistē — saņem uz vietas vai ar piegādi.
             </motion.p>
 
             <motion.div
@@ -108,8 +108,16 @@ export function Home({ onNavigate }: HomeProps) {
                 onClick={() => onNavigate("/offers")}
                 data-ocid="home.cta_button"
               >
-                Apskatīt piedāvājumus
+                Pasūtīt sushi
                 <ArrowRight size={16} />
+              </button>
+              <button
+                type="button"
+                className="btn-ghost-gold flex items-center gap-2"
+                onClick={() => onNavigate("/offers")}
+                data-ocid="home.secondary_button"
+              >
+                Skatīt komplektus
               </button>
             </motion.div>
 
@@ -124,40 +132,13 @@ export function Home({ onNavigate }: HomeProps) {
               <span
                 className="text-xs"
                 style={{
-                  color: "rgba(243,240,230,0.35)",
+                  color: "rgba(243,240,230,0.45)",
                   letterSpacing: "0.06em",
                 }}
               >
                 Blaumaņa iela 34-2, Rīga
               </span>
             </motion.div>
-          </motion.div>
-
-          {/* Image side */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2, duration: 1, ease: [0.22, 1, 0.36, 1] }}
-            className="relative hidden md:block"
-          >
-            <div className="image-frame" style={{ borderRadius: "4px" }}>
-              <img
-                src="/assets/generated/sete-01-placeholder.dim_1200x800.jpg"
-                alt="SETE Premium Sushi"
-                className="w-full h-80 object-cover"
-                style={{ display: "block" }}
-                loading="eager"
-              />
-            </div>
-            {/* Decorative gold dot */}
-            <div
-              className="absolute -bottom-4 -right-4 w-24 h-24 rounded-full"
-              style={{
-                background:
-                  "radial-gradient(circle, rgba(199,163,90,0.08) 0%, transparent 70%)",
-                border: "1px solid rgba(199,163,90,0.15)",
-              }}
-            />
           </motion.div>
         </div>
 

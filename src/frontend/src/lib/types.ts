@@ -18,7 +18,10 @@ export type OrderStatus =
   | "PAID"
   | "IN_PROGRESS"
   | "DONE"
-  | "CANCELED";
+  | "CANCELED"
+  | "PREPARING"
+  | "READY"
+  | "COMPLETED";
 
 export type DeliveryType = "DELIVERY" | "PICKUP";
 

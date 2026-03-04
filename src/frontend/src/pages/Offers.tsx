@@ -23,6 +23,7 @@ function OfferCard({
       className="premium-card overflow-hidden flex flex-col"
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -4, boxShadow: "0 12px 40px rgba(0,0,0,0.4)" }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.1, duration: 0.55 }}
       data-ocid={`offers.item.${index + 1}`}
@@ -30,7 +31,11 @@ function OfferCard({
       {/* Image — NO overlay on image */}
       <div
         className="image-frame flex-shrink-0"
-        style={{ borderRadius: "4px 4px 0 0", borderBottom: "none" }}
+        style={{
+          borderRadius: "4px 4px 0 0",
+          borderBottom: "none",
+          position: "relative",
+        }}
       >
         <img
           src={offer.imageUrl}
@@ -39,6 +44,27 @@ function OfferCard({
           style={{ display: "block" }}
           loading="lazy"
         />
+        {/* "Populārākais" badge on first card */}
+        {index === 0 && (
+          <div
+            style={{
+              position: "absolute",
+              top: "10px",
+              right: "10px",
+              background: "rgba(199,163,90,0.92)",
+              color: "#050506",
+              fontSize: "10px",
+              fontWeight: 700,
+              letterSpacing: "0.12em",
+              padding: "3px 9px",
+              borderRadius: "2px",
+              textTransform: "uppercase",
+              zIndex: 3,
+            }}
+          >
+            Populārākais
+          </div>
+        )}
       </div>
 
       {/* Content */}
@@ -58,10 +84,11 @@ function OfferCard({
             </h3>
           </div>
           <div
-            className="font-serif text-2xl flex-shrink-0 ml-4"
+            className="font-serif flex-shrink-0 ml-4"
             style={{
               color: "#C7A35A",
-              fontSize: "clamp(1.3rem, 2.5vw, 1.7rem)",
+              fontSize: "clamp(1.5rem, 3vw, 2rem)",
+              fontWeight: 400,
             }}
           >
             {offer.price}€

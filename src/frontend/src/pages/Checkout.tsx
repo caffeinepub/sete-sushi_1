@@ -1,6 +1,6 @@
 import { ArrowLeft, ChevronDown } from "lucide-react";
 import { motion } from "motion/react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 function CheckoutBackButton({ onClick }: { onClick: () => void }) {
   const [hovered, setHovered] = useState(false);
@@ -52,6 +52,7 @@ export function Checkout({ offerId, onNavigate }: CheckoutProps) {
   const [consent, setConsent] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
+  const submittedRef = useRef(false);
 
   const validate = () => {
     const errs: Record<string, string> = {};
@@ -66,11 +67,14 @@ export function Checkout({ offerId, onNavigate }: CheckoutProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Prevent duplicate submissions
+    if (submittedRef.current) return;
     const errs = validate();
     setErrors(errs);
     if (Object.keys(errs).length > 0) return;
     if (!offer) return;
 
+    submittedRef.current = true;
     setSubmitting(true);
     try {
       const orderId = generateOrderId();
@@ -83,7 +87,9 @@ export function Checkout({ offerId, onNavigate }: CheckoutProps) {
         deliveryType,
         phone: phone.trim(),
         address:
-          deliveryType === "DELIVERY" ? address.trim() : "Blaumaņa 34-2, Rīga",
+          deliveryType === "DELIVERY"
+            ? address.trim()
+            : "Blaumaņa iela 34-2, Rīga",
         time,
         note: note.trim(),
         status: "NEW",
@@ -99,7 +105,9 @@ export function Checkout({ offerId, onNavigate }: CheckoutProps) {
       }
 
       onNavigate("/success", { orderId });
-    } finally {
+    } catch {
+      // Reset on error so user can retry
+      submittedRef.current = false;
       setSubmitting(false);
     }
   };
@@ -121,7 +129,7 @@ export function Checkout({ offerId, onNavigate }: CheckoutProps) {
     <div className="min-h-screen">
       <Header currentHash={`/checkout/${offerId}`} />
 
-      <div className="pt-28 pb-16 px-6">
+      <div className="pt-28 pb-16 md:pb-16 pb-24 px-6">
         <div className="max-w-2xl mx-auto">
           <CheckoutBackButton onClick={() => onNavigate(`/offer/${offerId}`)} />
 
@@ -199,7 +207,12 @@ export function Checkout({ offerId, onNavigate }: CheckoutProps) {
               </div>
 
               {/* Form */}
-              <form onSubmit={handleSubmit} noValidate className="space-y-6">
+              <form
+                id="checkout-form"
+                onSubmit={handleSubmit}
+                noValidate
+                className="space-y-6"
+              >
                 {/* Phone */}
                 <div>
                   <label className="gold-label block mb-2" htmlFor="phone">
@@ -245,12 +258,12 @@ export function Checkout({ offerId, onNavigate }: CheckoutProps) {
                         {
                           value: "PICKUP",
                           label: "Saņemt uz vietas",
-                          sub: "Blaumaņa 34-2, Rīga",
+                          sub: "Blaumaņa iela 34-2, Rīga",
                         },
                         {
                           value: "DELIVERY",
-                          label: "Piegāde",
-                          sub: "Uz jūsu adresi",
+                          label: "Piegāde uz adresi",
+                          sub: "Piegāde uz jūsu adresi",
                         },
                       ] as const
                     ).map(({ value, label, sub }) => (
@@ -387,7 +400,7 @@ export function Checkout({ offerId, onNavigate }: CheckoutProps) {
                     id="note"
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
-                    placeholder="Īpaši vēlējumi, alerģijas, piegādes instrukcijas..."
+                    placeholder="Īpaši vēlējumi vai piegādes instrukcijas"
                     rows={3}
                     className={`${inputClass} resize-none`}
                     style={inputStyle}
@@ -481,6 +494,40 @@ export function Checkout({ offerId, onNavigate }: CheckoutProps) {
           )}
         </div>
       </div>
+
+      {/* Sticky mobile order bar */}
+      {offer && (
+        <div
+          className="fixed bottom-0 left-0 right-0 md:hidden z-40 flex items-center justify-between px-4 py-3"
+          style={{
+            background: "rgba(5,5,6,0.95)",
+            borderTop: "1px solid rgba(199,163,90,0.2)",
+            backdropFilter: "blur(10px)",
+          }}
+        >
+          <div>
+            <div
+              style={{ color: "#F3F0E6", fontSize: "13px", fontWeight: 600 }}
+            >
+              {offer.name}
+            </div>
+            <div
+              style={{ color: "#C7A35A", fontSize: "15px", fontWeight: 700 }}
+            >
+              {offer.price}€
+            </div>
+          </div>
+          <button
+            type="submit"
+            form="checkout-form"
+            className="btn-gold px-6 py-2.5 text-xs"
+            data-ocid="checkout.mobile_submit_button"
+            disabled={submitting}
+          >
+            {submitting ? "Apstrādā…" : "Pasūtīt"}
+          </button>
+        </div>
+      )}
 
       <Footer />
     </div>

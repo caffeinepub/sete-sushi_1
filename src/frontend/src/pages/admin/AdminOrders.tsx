@@ -14,6 +14,9 @@ interface AdminOrdersProps {
 const ALL_STATUSES: OrderStatus[] = [
   "NEW",
   "CONFIRMED",
+  "PREPARING",
+  "READY",
+  "COMPLETED",
   "PAID",
   "IN_PROGRESS",
   "DONE",
@@ -23,9 +26,12 @@ const ALL_STATUSES: OrderStatus[] = [
 const STATUS_LABELS: Record<OrderStatus, string> = {
   NEW: "Jauns",
   CONFIRMED: "Apstiprināts",
+  PREPARING: "Gatavo",
+  READY: "Gatavs",
+  COMPLETED: "Pabeigts",
   PAID: "Apmaksāts",
-  IN_PROGRESS: "Gatavo",
-  DONE: "Pabeigts",
+  IN_PROGRESS: "Apstrādē",
+  DONE: "Izpildīts",
   CANCELED: "Atcelts",
 };
 
@@ -36,6 +42,9 @@ const STATUS_CLASS: Record<OrderStatus, string> = {
   IN_PROGRESS: "status-in_progress",
   DONE: "status-done",
   CANCELED: "status-canceled",
+  PREPARING: "status-preparing",
+  READY: "status-ready",
+  COMPLETED: "status-completed",
 };
 
 function OrderDetailModal({
@@ -344,7 +353,7 @@ export function AdminOrders({ currentPath, onNavigate }: AdminOrdersProps) {
                 <div className="w-28 flex-shrink-0">
                   <div
                     className="text-xs font-medium"
-                    style={{ color: "#C7A35A" }}
+                    style={{ color: "#C7A35A", wordBreak: "break-all" }}
                   >
                     {order.id}
                   </div>
@@ -355,7 +364,7 @@ export function AdminOrders({ currentPath, onNavigate }: AdminOrdersProps) {
                   </span>
                 </div>
 
-                {/* Offer + phone */}
+                {/* Offer + phone + type */}
                 <div className="flex-1 min-w-0">
                   <div
                     className="text-xs font-medium truncate"
@@ -367,8 +376,15 @@ export function AdminOrders({ currentPath, onNavigate }: AdminOrdersProps) {
                     className="text-xs mt-0.5"
                     style={{ color: "rgba(243,240,230,0.4)" }}
                   >
-                    {order.phone} ·{" "}
-                    {order.deliveryType === "DELIVERY" ? "Piegāde" : "Paņem"}
+                    {order.phone}
+                  </div>
+                  <div
+                    className="text-xs mt-0.5"
+                    style={{ color: "rgba(199,163,90,0.55)" }}
+                  >
+                    {order.deliveryType === "DELIVERY"
+                      ? "Piegāde"
+                      : "Saņemt uz vietas"}
                   </div>
                 </div>
 
@@ -378,7 +394,19 @@ export function AdminOrders({ currentPath, onNavigate }: AdminOrdersProps) {
                     className="text-xs"
                     style={{ color: "rgba(243,240,230,0.5)" }}
                   >
-                    {order.time}
+                    {new Date(order.createdAt).toLocaleTimeString("lv-LV", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </div>
+                  <div
+                    className="text-xs"
+                    style={{ color: "rgba(243,240,230,0.3)" }}
+                  >
+                    {new Date(order.createdAt).toLocaleDateString("lv-LV", {
+                      day: "2-digit",
+                      month: "2-digit",
+                    })}
                   </div>
                   <div
                     className="text-xs font-medium mt-0.5"

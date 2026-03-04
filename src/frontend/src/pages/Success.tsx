@@ -1,4 +1,4 @@
-import { ArrowLeft, CheckCircle2 } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { motion } from "motion/react";
 import { Footer } from "../components/layout/Footer";
 import { Header } from "../components/layout/Header";
@@ -45,14 +45,14 @@ export function Success({ orderId, onNavigate }: SuccessProps) {
                 fontSize: "clamp(1.8rem, 4vw, 2.8rem)",
               }}
             >
-              Paldies!
+              Paldies par pasūtījumu!
             </h1>
             <p
               className="text-sm leading-relaxed mb-3"
               style={{ color: "rgba(243,240,230,0.55)" }}
             >
-              Jūsu pasūtījums ir veiksmīgi nosūtīts. Mēs ar jums sazināsimies pa
-              WhatsApp vai telefonu drīzumā.
+              Mēs ar jums sazināsimies tuvāko minūšu laikā, lai apstiprinātu
+              pasūtījumu.
             </p>
 
             {orderId && (
@@ -70,30 +70,13 @@ export function Success({ orderId, onNavigate }: SuccessProps) {
               </div>
             )}
 
-            <div
-              className="rounded-sm p-5 mb-8 text-left"
-              style={{
-                background: "rgba(11,11,13,0.8)",
-                border: "1px solid rgba(199,163,90,0.12)",
-              }}
-            >
-              <p
-                className="text-xs leading-relaxed"
-                style={{ color: "rgba(243,240,230,0.5)" }}
-              >
-                Ja WhatsApp logs neatvērās automātiski, pārbaudiet, vai esat
-                atļāvis uznirstošos logus, vai sazinieties ar mums tieši.
-              </p>
-            </div>
-
             <button
               type="button"
-              className="btn-ghost-gold flex items-center gap-2 mx-auto"
+              className="btn-gold flex items-center gap-2 mx-auto"
               onClick={() => onNavigate("/")}
               data-ocid="success.home_button"
             >
-              <ArrowLeft size={14} />
-              Atpakaļ uz sākumu
+              Atgriezties uz sākumu
             </button>
           </motion.div>
         </div>

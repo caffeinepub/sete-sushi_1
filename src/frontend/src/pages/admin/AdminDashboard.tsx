@@ -67,15 +67,21 @@ function ViewAllButton({ onClick }: { onClick: () => void }) {
 const STATUS_LABELS: Record<OrderStatus, string> = {
   NEW: "Jauns",
   CONFIRMED: "Apstiprināts",
+  PREPARING: "Gatavo",
+  READY: "Gatavs",
+  COMPLETED: "Pabeigts",
   PAID: "Apmaksāts",
-  IN_PROGRESS: "Gatavo",
-  DONE: "Pabeigts",
+  IN_PROGRESS: "Apstrādē",
+  DONE: "Izpildīts",
   CANCELED: "Atcelts",
 };
 
 const STATUS_CLASS: Record<OrderStatus, string> = {
   NEW: "status-new",
   CONFIRMED: "status-confirmed",
+  PREPARING: "status-preparing",
+  READY: "status-ready",
+  COMPLETED: "status-completed",
   PAID: "status-paid",
   IN_PROGRESS: "status-in_progress",
   DONE: "status-done",
